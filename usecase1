@@ -1,0 +1,23 @@
+package observer;
+
+import java.util.Scanner;
+
+public class opattern {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		String storedvariable = null;
+		String validate = new String("quit");
+		Scanner scan= new Scanner(System.in);
+		String storevariable = new String(scan.nextLine());
+		System.out.println(storevariable);
+		if (storevariable.equalsIgnoreCase(validate) == true) {
+			System.out.println("exiting");
+			System.exit(0);
+		}
+		else if (storedvariable != validate) {
+			System.out.println("Try command again");
+		}
+	
+	}
+}
