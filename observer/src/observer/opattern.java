@@ -6,7 +6,7 @@ public class opattern {
 	
 	static public class Controller {
 		
-			public void parseInput(String input, Observer[] observerArray, TextState textstate) { //I have to pass all the objects even if they are only used in one case, there must be a better way of doing this.
+			public void parseInput(String input, Observer[] observerArray, TextState textstate) {
 			
 			switch (input) { // a bit like an if, elif, else. default is the "else"
 				
@@ -17,6 +17,12 @@ public class opattern {
 				case "register observers":
 					for (int i = 0; i < observerArray.length; i++) { //go through each of the observers and call the register method on them
 						textstate.Register(observerArray[i]);
+					}
+					break;
+				
+				case "status":
+					for (int i = 0; i < observerArray.length; i++) { //go through each of the observers and call the register method on them
+						observerArray[i].getStatus();
 					}
 					break;
 			
@@ -35,8 +41,22 @@ public class opattern {
 		boolean listening = false;
 		
 		public void Register() {
-			listening = true;
-			System.out.println(name+" is now registered");
+			if (listening == false) {
+				listening = true;
+				System.out.println(name+" is now registered");
+			}
+			else {
+				System.out.println(name+" is already registered");
+			}
+		}
+		
+		public void getStatus() {
+			if (listening == true) {
+				System.out.println(name+" is listening");
+			}
+			else {
+				System.out.println(name+" is not listening");
+			}
 		}
 	}
 	
