@@ -8,9 +8,16 @@ public class opattern {
 		
 			public void parseInput(String input, Observer[] observerArray, TextState textstate) {
 			
+			if (input.startsWith("send ")) {
+				input = input.substring(5);
+				textstate.Notify(input);
+			}
+			
+			else {
 			switch (input) { // a bit like an if, elif, else. default is the "else"
 				
 				case "quit":
+					System.out.println("exiting the program");
 					System.exit(0); // exits the program
 					break;
 				
@@ -35,7 +42,7 @@ public class opattern {
 				default:
 					System.out.println("Unrecognized Command");
 					break;
-					
+			}
 			}
 		}
 			
@@ -45,14 +52,19 @@ public class opattern {
 	static public class Observer {
 		String name;
 		boolean listening = false;
+		int count = 0;
+		int max = -1;
+		ArrayList<Character> keys = new ArrayList<Character>();
 		
 		public void Register() {
 			if (listening == false) {
 				listening = true;
 				System.out.println(name+" is now registered");
+				count = 0;
 			}
 			else {
-				System.out.println(name+" is already registered");
+				System.out.println(name+" is already registered, but I reset the count");
+				count = 0;
 			}
 		}
 		
@@ -74,13 +86,36 @@ public class opattern {
 				System.out.println(name+" is not listening");
 			}
 		}
+		
+		public void Update(String input, TextState textstate) {
+			int number = 0;
+			
+			System.out.println("I am "+name+", the following key characters appear in the input string:");
+			
+			for (int i = 0; i < input.length(); i++) {
+				if (count >= max) {
+					System.out.println("I have hit my limit... goodbye");
+					textstate.DelayUnRegister(this);
+				}
+				else if (keys.contains(input.charAt(i))) {
+					System.out.println(input.charAt(i));
+					count++;
+					number++;
+				}
+				else {
+					//do nothing
+				}
+			}
+			
+			System.out.println("for a total of "+number+" key characters");
+		}
 	}
 	
 	static public class TextState {
 		
-		ArrayList<String> notifications = new ArrayList<String>(); // arraylists are like arrays, but can be dynamically allocated
-		
 		ArrayList<Observer> registeredObservers = new ArrayList<Observer>();
+		
+		ArrayList<Observer> preventConcurrentModification = new ArrayList<Observer>();
 		
 		public void Register(Observer observer) {
 			if (registeredObservers.contains(observer) == false) {
@@ -92,6 +127,21 @@ public class opattern {
 		public void UnRegister(Observer observer) {
 			registeredObservers.remove(observer);
 			observer.UnRegister();
+		}
+		
+		public void DelayUnRegister(Observer observer) {
+			preventConcurrentModification.add(observer);
+			observer.UnRegister();
+		}
+		
+		public void Notify(String input) {
+			for (int i = 0; i < registeredObservers.size(); i++) {
+				registeredObservers.get(i).Update(input, this);
+			}
+			for (Observer o : preventConcurrentModification) {
+				registeredObservers.remove(o);
+			}
+			preventConcurrentModification.clear();
 		}
 		
 	}
@@ -107,9 +157,18 @@ public class opattern {
 		observerArray[1] = new Observer();
 		observerArray[2] = new Observer();
 		
-		observerArray[0].name = "Observer 1"; //set the names of the observers
+		observerArray[0].name = "Observer 1";
+		observerArray[0].max = 5;
+		observerArray[0].keys.addAll(Arrays.asList('a', 'e', 'o', 'i', 'u', 'A', 'E', 'O', 'I', 'U'));
+		
 		observerArray[1].name = "Observer 2";
+		observerArray[1].max = 10;
+		observerArray[1].keys.addAll(Arrays.asList('q', 'w', 'r', 't', 'y', 'p', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
+				'Q', 'W', 'R', 'T', 'Y', 'P', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'Z', 'X', 'C', 'V', 'B', 'N', 'M'));
+		
 		observerArray[2].name = "Observer 3";
+		observerArray[2].max = 2147483647;
+		observerArray[2].keys.addAll(Arrays.asList('1', '2', '3', '4', '5', '6', '7', '8', '9'));
 		
 		String input = ""; // initial value of input
 		
