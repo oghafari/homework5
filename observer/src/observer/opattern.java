@@ -25,6 +25,12 @@ public class opattern {
 						observerArray[i].getStatus();
 					}
 					break;
+				
+				case "unregister":
+					for (int i = 0; i < observerArray.length; i++) { //go through each of the observers and call the register method on them
+						textstate.UnRegister(observerArray[i]);
+					}
+					break;
 			
 				default:
 					System.out.println("Unrecognized Command");
@@ -50,6 +56,16 @@ public class opattern {
 			}
 		}
 		
+		public void UnRegister() {
+			if (listening == true) {
+				listening = false;
+				System.out.println(name+" is now unregistered");
+			}
+			else {
+				System.out.println(name+" is already unregistered");
+			}
+		}
+		
 		public void getStatus() {
 			if (listening == true) {
 				System.out.println(name+" is listening");
@@ -67,8 +83,15 @@ public class opattern {
 		ArrayList<Observer> registeredObservers = new ArrayList<Observer>();
 		
 		public void Register(Observer observer) {
-			registeredObservers.add(observer);
+			if (registeredObservers.contains(observer) == false) {
+				registeredObservers.add(observer);
+			}
 			observer.Register();
+		}
+		
+		public void UnRegister(Observer observer) {
+			registeredObservers.remove(observer);
+			observer.UnRegister();
 		}
 		
 	}
